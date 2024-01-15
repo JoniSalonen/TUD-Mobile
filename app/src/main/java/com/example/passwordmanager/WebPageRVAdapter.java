@@ -3,6 +3,8 @@ package com.example.passwordmanager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,15 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WebPageRVAdapter extends ListAdapter<LoginDetailsModal, WebPageRVAdapter.ViewHolder>{
+public class WebPageRVAdapter extends ListAdapter<LoginDetailsModal, WebPageRVAdapter.ViewHolder> implements Filterable {
 
-    private ArrayList<LoginDetailsModal>  detailList;
-
-
-    // creating a variable for on item click listener.
     private OnItemClickListener listener;
+    private List<LoginDetailsModal> detailList = new ArrayList<>();
+    private List<LoginDetailsModal> detailsListFull = new ArrayList<>();
 
-    private List<LoginDetailsModal> detailsListFull;
 
     // creating a constructor class for our adapter class.
     WebPageRVAdapter() {
@@ -43,6 +42,7 @@ public class WebPageRVAdapter extends ListAdapter<LoginDetailsModal, WebPageRVAd
         }
     };
 
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,6 +52,7 @@ public class WebPageRVAdapter extends ListAdapter<LoginDetailsModal, WebPageRVAd
         return new ViewHolder(item);
     }
 
+    // Binds data to the views in each ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
@@ -61,13 +62,17 @@ public class WebPageRVAdapter extends ListAdapter<LoginDetailsModal, WebPageRVAd
         holder.passwordTV.setText(model.getPassword());
     }
 
-
-
-
-
+    // Gets the LoginDetailsModal object at a given position
     public LoginDetailsModal getDetailAt(int position) {
         return getItem(position);
     }
+
+    // Start of filer it is not working correctly
+    @Override
+    public Filter getFilter() {
+        return detailsFilter;
+    }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -76,6 +81,7 @@ public class WebPageRVAdapter extends ListAdapter<LoginDetailsModal, WebPageRVAd
         ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            // Give components variable names
             platformNameTV = itemView.findViewById(R.id.tvPlatformName);
             usernameTV = itemView.findViewById(R.id.tvUsername);
             passwordTV = itemView.findViewById(R.id.tvPassword);
@@ -96,9 +102,46 @@ public class WebPageRVAdapter extends ListAdapter<LoginDetailsModal, WebPageRVAd
     public interface OnItemClickListener {
         void onItemClick(LoginDetailsModal model);
     }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
+
+    // filter stuff I didn't get it to work
+    private Filter detailsFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence sequence) {
+            List<LoginDetailsModal> filteredList = new ArrayList<>();
+
+            if (sequence == null || sequence.length() == 0) {
+                filteredList.addAll(detailsListFull);
+            } else {
+                String filterPattern = sequence.toString().toLowerCase().trim();
+
+                for (LoginDetailsModal item : detailsListFull) {
+                    if (item.getPlatformName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            detailList.clear();
+            detailList.addAll((List<LoginDetailsModal>) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
+
+
+
 }
 
 

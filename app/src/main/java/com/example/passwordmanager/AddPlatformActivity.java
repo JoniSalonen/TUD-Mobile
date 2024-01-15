@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AddPlatformActivity extends AppCompatActivity {
 
+    // initialising edit texts and button
     private static final int ADD_PLATFORM_REQUEST = 1;
     private EditText platformNameET;
     private EditText usernameET;
@@ -23,12 +24,14 @@ public class AddPlatformActivity extends AppCompatActivity {
     public static final String EXTRA_USERNAME = "com.gtappdevelopers.gfgroomdatabase.EXTRA_USERNAME";
     public static final String EXTRA_PASSWORD = "com.gtappdevelopers.gfgroomdatabase.EXTRA_PASSWORD";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_platform);
 
 
+        //Give components variable names
         platformNameET = findViewById(R.id.idEtPlatformName);
         usernameET = findViewById(R.id.idEtUsername);
         passwordET = findViewById(R.id.idEtPassword);
@@ -62,6 +65,7 @@ public class AddPlatformActivity extends AppCompatActivity {
         });
     }
 
+    //saves platform details
     private void savePlatform(String platformName, String username, String password) {
 
         Intent data = new Intent();

@@ -21,28 +21,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebPageActivity extends AppCompatActivity {
-
-    private RecyclerView detailsRV;
     private static final int ADD_PLATFORM_REQUEST = 1;
     private static final int EDIT_DETAILS_REQUEST = 2;
     private WebModal webModal;
-    private SearchView searchView;
-
     private WebPageRVAdapter adapter;
-
-    private ArrayList<LoginDetailsModal> detailsModalArrayList;
-
+    private ArrayList<LoginDetailsModal> detailsListFull;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webpage);
 
+        SearchView searchView = findViewById(R.id.swPlatform);
 
-        detailsRV = findViewById(R.id.idRVPlatform);
+        RecyclerView detailsRV = findViewById(R.id.idRVPlatform);
         FloatingActionButton fab = findViewById(R.id.idFABAdd);
-        searchView = findViewById(R.id.swPlatform);
-
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +48,7 @@ public class WebPageActivity extends AppCompatActivity {
         detailsRV.setLayoutManager(new LinearLayoutManager(this));
         detailsRV.setHasFixedSize(true);
 
-        final WebPageRVAdapter adapter = new WebPageRVAdapter();
+        adapter = new WebPageRVAdapter();
 
         detailsRV.setAdapter(adapter);
 
@@ -64,6 +57,7 @@ public class WebPageActivity extends AppCompatActivity {
         webModal.getAllDetails().observe(this, new Observer<List<LoginDetailsModal>>() {
             @Override
             public void onChanged(List<LoginDetailsModal> models) {
+                detailsListFull = (ArrayList<LoginDetailsModal>) models; // Update your detailsListFull
                 adapter.submitList(models);
             }
         });
@@ -94,8 +88,23 @@ public class WebPageActivity extends AppCompatActivity {
             }
         });
 
-    }
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
+
+
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -104,7 +113,6 @@ public class WebPageActivity extends AppCompatActivity {
             String platformName = data.getStringExtra(AddPlatformActivity.EXTRA_PLATFORM_NAME);
             String username = data.getStringExtra(AddPlatformActivity.EXTRA_USERNAME);
             String password = data.getStringExtra(AddPlatformActivity.EXTRA_PASSWORD);
-
 
 
             LoginDetailsModal model = new LoginDetailsModal(platformName, username, password);
@@ -128,14 +136,6 @@ public class WebPageActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Login details not saved", Toast.LENGTH_SHORT).show();
         }
-
-
-
     }
-
-
-
-
-
 
 }

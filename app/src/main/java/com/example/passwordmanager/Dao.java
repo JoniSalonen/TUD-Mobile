@@ -33,4 +33,6 @@ public interface Dao {
     // in this we are ordering our details in ascending order with our platform name
     @Query("SELECT * FROM details_table ORDER BY platformName ASC")
     LiveData<List<LoginDetailsModal>> getAllDetails();
+
+
 }
